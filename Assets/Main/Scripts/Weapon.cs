@@ -8,6 +8,9 @@ public class Weapon : MonoBehaviour
     public Transform bulletSpawn;
     public float bulletVelocity = 30f;
     public float bulletPrefabLifeTime = 3f;
+    public Camera playerCamera;
+    public MouseMovement mouseMovement;
+    public PlayerMovement playerMovement;
 
     public float fireRate = 0.1f;
     private float nextFireTime = 0f;
@@ -33,7 +36,22 @@ public class Weapon : MonoBehaviour
         }
 
         HandleShake(isFiring);
+
+        if (isFiring)
+        {
+            mouseMovement.mouseSensitivity = 300f;
+            playerMovement.speed = 7.2f;
+        }
+        else
+        {
+            mouseMovement.mouseSensitivity = 500f;
+            playerMovement.speed = 12f;
+
+        }
+
     }
+
+
 
     void HandleShake(bool isFiring)
     {
@@ -46,19 +64,45 @@ public class Weapon : MonoBehaviour
         }
         else
         {
-            // Smoothly return to original position
+            
             transform.localPosition = Vector3.Lerp(transform.localPosition, originalLocalPosition, Time.deltaTime * 10f);
         }
     }
 
+   
+
     public void FireWeapon()
     {
+        if (bulletPrefab == null || bulletSpawn == null || playerCamera == null)
+        {
+            Debug.LogError("Missing references!");
+            return;
+        }
+
+        
+        Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        RaycastHit hit;
+
+        Vector3 targetPoint;
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            targetPoint = hit.point;
+        }
+        else
+        {
+            targetPoint = ray.GetPoint(100f); // far point if nothing hit
+        }
+
+        
+        Vector3 direction = (targetPoint - bulletSpawn.position).normalized;
+
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawn.position, Quaternion.identity);
 
         Rigidbody rb = bullet.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.AddForce(bulletSpawn.forward * bulletVelocity, ForceMode.Impulse);
+            rb.AddForce(direction * bulletVelocity, ForceMode.Impulse);
         }
 
         StartCoroutine(DestroyBulletAfterTime(bullet, bulletPrefabLifeTime));
