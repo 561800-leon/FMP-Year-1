@@ -5,9 +5,9 @@ public class PlayerMovement : MonoBehaviour
 
     public CharacterController controller;
 
-    public float speed = 18f;
+    public float speed = 20f;
     public float gravity = -9.81f * 2;
-    public float jumpheight = 3f;
+    public float jumpheight = 4.5f;
  
      public Transform groundCheck;
      public float groundDistance = 0.4f;
@@ -63,15 +63,19 @@ public class PlayerMovement : MonoBehaviour
         if (lastposition != gameObject.transform.position && isGrounded == true)
         {
             isMoving = true;
-            // For later use
+
         }
         else
         {
             isMoving = false;
-            // For later use
+
         }
 
         lastposition = gameObject.transform.position;
+
+        Debug.Log(isGrounded);
+
+
 
     }
 

@@ -15,7 +15,6 @@ public class Bullet : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ground"))
         {
-            weapon.bulletVelocity = 5f;
              Destroy(gameObject);   
         }
 

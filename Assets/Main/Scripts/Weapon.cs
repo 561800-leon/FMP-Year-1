@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class Weapon : MonoBehaviour
 {
@@ -11,6 +13,12 @@ public class Weapon : MonoBehaviour
     public Camera playerCamera;
     public MouseMovement mouseMovement;
     public PlayerMovement playerMovement;
+    public int magazineSize = 27;
+    public float reloadTime = 3f;
+    public int currentAmmo;
+    public bool isReloading;
+    public Image crosshair;
+    public Image reloadIcon;
 
     public float fireRate = 0.1f;
     private float nextFireTime = 0f;
@@ -23,31 +31,48 @@ public class Weapon : MonoBehaviour
     void Start()
     {
         originalLocalPosition = transform.localPosition;
+        currentAmmo = magazineSize;
     }
 
     void Update()
     {
         bool isFiring = Input.GetKey(KeyCode.Mouse0);
 
-        if (isFiring && Time.time >= nextFireTime)
+        if (isReloading)
+        {
+            return;
+        }
+
+
+        if (isFiring && Time.time >= nextFireTime && currentAmmo > 0)
         {
             nextFireTime = Time.time + fireRate;
             FireWeapon();
+            currentAmmo--;
+
+            if (currentAmmo <= 0)
+            {
+                StartCoroutine(Reload());
+            }
         }
 
         HandleShake(isFiring);
 
         if (isFiring)
         {
-            mouseMovement.mouseSensitivity = 300f;
-            playerMovement.speed = 7.2f;
+            mouseMovement.mouseSensitivity = 227f;
+            playerMovement.speed = 10f;
         }
         else
         {
-            mouseMovement.mouseSensitivity = 500f;
-            playerMovement.speed = 12f;
+            mouseMovement.mouseSensitivity = 450f;
+            playerMovement.speed = 20f;
 
         }
+
+        crosshair.enabled = !isReloading;
+         reloadIcon.enabled = isReloading;
+
 
     }
 
@@ -64,12 +89,12 @@ public class Weapon : MonoBehaviour
         }
         else
         {
-            
+
             transform.localPosition = Vector3.Lerp(transform.localPosition, originalLocalPosition, Time.deltaTime * 10f);
         }
     }
 
-   
+
 
     public void FireWeapon()
     {
@@ -79,7 +104,7 @@ public class Weapon : MonoBehaviour
             return;
         }
 
-        
+
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         RaycastHit hit;
 
@@ -94,7 +119,7 @@ public class Weapon : MonoBehaviour
             targetPoint = ray.GetPoint(100f); // far point if nothing hit
         }
 
-        
+
         Vector3 direction = (targetPoint - bulletSpawn.position).normalized;
 
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawn.position, Quaternion.identity);
@@ -113,4 +138,19 @@ public class Weapon : MonoBehaviour
         yield return new WaitForSeconds(delay);
         Destroy(bullet);
     }
+
+     public IEnumerator Reload()
+    {
+        isReloading = true;
+
+        Debug.Log("Reloading...");
+
+        yield return new WaitForSeconds(reloadTime);
+
+        currentAmmo = magazineSize;
+        isReloading = false;
+
+        Debug.Log("Reload complete");
+    }
+
 }
