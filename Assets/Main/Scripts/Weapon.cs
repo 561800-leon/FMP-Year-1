@@ -43,6 +43,13 @@ public class Weapon : MonoBehaviour
             return;
         }
 
+        if (!isReloading && Input.GetKeyDown(KeyCode.R) && currentAmmo < magazineSize)
+        {
+
+            StartCoroutine(Reload());
+            Debug.Log("Manual Reload...");
+        }
+
 
         if (isFiring && Time.time >= nextFireTime && currentAmmo > 0)
         {
@@ -71,8 +78,10 @@ public class Weapon : MonoBehaviour
         }
 
         crosshair.enabled = !isReloading;
-         reloadIcon.enabled = isReloading;
+        reloadIcon.enabled = isReloading;
 
+
+        if (currentAmmo == magazineSize) return;
 
     }
 

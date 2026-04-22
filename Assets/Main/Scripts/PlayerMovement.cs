@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
         // Resetting the default velocity
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f;
+            velocity.y = 0f;
         }
 
         float x = Input.GetAxis("Horizontal");
@@ -73,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
 
         lastposition = gameObject.transform.position;
 
-        Debug.Log(isGrounded);
+        
 
 
 
