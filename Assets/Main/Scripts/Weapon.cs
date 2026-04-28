@@ -76,6 +76,11 @@ public class Weapon : MonoBehaviour
             playerMovement.speed = 20f;
 
         }
+        if (isReloading)
+        {
+            mouseMovement.mouseSensitivity = 450f;
+            playerMovement.speed = 20f;
+        }
 
         crosshair.enabled = !isReloading;
         reloadIcon.enabled = isReloading;
